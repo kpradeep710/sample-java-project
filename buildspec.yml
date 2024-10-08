@@ -6,7 +6,7 @@ phases:
       java: openjdk11
     commands:
       - echo Installing Maven
-      - apt-get install -y maven
+      - yum install -y maven  # Change to yum for Amazon Linux
   build:
     commands:
       - echo Building the Java app
@@ -16,6 +16,6 @@ phases:
       - echo Build completed. Uploading artifacts to S3.
 artifacts:
   files:
-    - target/*.jar
-  discard-paths: yes
-  base-directory: target
+    - "*.jar"    # This matches JAR files inside the target directory
+  base-directory: target  # Corrected to remove any spaces
+  discard-paths: yes  # This ensures that artifacts are stored without folder paths
