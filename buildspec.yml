@@ -3,15 +3,34 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto11
+      java: corretto11  # Set to the version you need; alternatives are corretto8, corretto17, etc.
+    commands:
+      - echo "Installing Maven..."
+      - yum install -y maven  # Install Maven on the build environment
+
+  pre_build:
+    commands:
+      - echo "Starting pre-build phase..."
+      - echo "Cleaning and downloading dependencies..."
+      - mvn clean install -DskipTests  # Clean and install dependencies without running tests
+
   build:
     commands:
-      - echo Running tests `date`
-      - mvn test 
+      - echo "Starting build phase..."
+      - mvn package  # Compile and package the application into a JAR or WAR
+      - echo "Build phase complete."
+
   post_build:
     commands:
-      - echo Building project started on `date`
-      - mvn install package
+      - echo "Starting post-build phase..."
+      - mvn test  # Optional: Run tests after the build
+      - echo "Post-build phase complete."
+
 artifacts:
   files:
-    - target/my-java-app-1.0-SNAPSHOT.jar
+    - target/*.jar  # Change to *.war if you're building a WAR file
+  discard-paths: yes  # Exclude directory structure in the artifact location
+
+cache:
+  paths:
+    - ~/.m2/**/*  # Cache Maven dependencies to speed up future builds
