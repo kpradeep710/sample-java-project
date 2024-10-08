@@ -3,19 +3,15 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: openjdk11
-    commands:
-      - echo Installing Maven
-      - yum install -y maven  # Change to yum for Amazon Linux
+      java: corretto11
   build:
     commands:
-      - echo Building the Java app
-      - mvn clean package
+      - echo Running tests `date`
+      - mvn test 
   post_build:
     commands:
-      - echo Build completed. Uploading artifacts to S3.
+      - echo Building project started on `date`
+      - mvn install package
 artifacts:
   files:
-    - "*.jar"    # This matches JAR files inside the target directory
-  base-directory: target  # Corrected to remove any spaces
-  discard-paths: yes  # This ensures that artifacts are stored without folder paths
+    - target/my-java-app-1.0-SNAPSHOT.jar
