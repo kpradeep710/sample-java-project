@@ -15,8 +15,8 @@ phases:
   pre_build:
     commands:
       - echo "Starting the build process..."
-      - echo "Downloading dependencies..."
-      - mvn dependency:resolve  # Resolves dependencies without building the project
+      - echo "Resolving dependencies with debug info..."
+      - mvn -X dependency:resolve  # Added -X for debugging
       - mvn clean  # Cleans up any previous builds
 
   build:
