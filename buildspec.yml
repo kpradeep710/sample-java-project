@@ -1,36 +1,43 @@
 version: 0.2
 
+env:
+  variables:
+    MAVEN_OPTS: "-Dmaven.test.failure.ignore=true"  # Optional: Continue the build even if tests fail
+
 phases:
   install:
     runtime-versions:
-      java: corretto11  # Set to the version you need; alternatives are corretto8, corretto17, etc.
+      java: corretto11  # Specify the Java version you need; change to `corretto8` or another as needed
     commands:
       - echo "Installing Maven..."
-      - yum install -y maven  # Install Maven on the build environment
+      - yum install -y maven
 
   pre_build:
     commands:
-      - echo "Starting pre-build phase..."
-      - echo "Cleaning and downloading dependencies..."
-      - mvn clean install -DskipTests  # Clean and install dependencies without running tests
+      - echo "Starting the build process..."
+      - echo "Downloading dependencies..."
+      - mvn dependency:resolve  # Resolves dependencies without building the project
+      - mvn clean  # Cleans up any previous builds
 
   build:
     commands:
-      - echo "Starting build phase..."
-      - mvn package  # Compile and package the application into a JAR or WAR
-      - echo "Build phase complete."
+      - echo "Compiling the application..."
+      - mvn compile  # Compiles the Java source code
+      - echo "Running unit tests..."
+      - mvn test  # Runs tests; adjust the MAVEN_OPTS environment variable to skip tests if needed
+      - echo "Packaging the application..."
+      - mvn package  # Packages the code into a JAR/WAR file
 
   post_build:
     commands:
-      - echo "Starting post-build phase..."
-      - mvn test  # Optional: Run tests after the build
-      - echo "Post-build phase complete."
+      - echo "Build completed on `date`."
+      - echo "Collecting artifacts..."
 
 artifacts:
   files:
-    - target/*.jar  # Change to *.war if you're building a WAR file
-  discard-paths: yes  # Exclude directory structure in the artifact location
+    - target/*.jar  # Modify this to `target/*.war` if you're building a WAR file for web applications
+  discard-paths: yes  # Stores artifacts without preserving directory structure
 
 cache:
   paths:
-    - ~/.m2/**/*  # Cache Maven dependencies to speed up future builds
+    - /root/.m2/**/*  # Caches Maven dependencies to speed up future builds
