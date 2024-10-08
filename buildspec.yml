@@ -1,1 +1,23 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: openjdk11   # Specify Java version
+    commands:
+      - echo Installing dependencies...
+      - yum install -y maven  # Install Maven for Java dependency management
+  build:
+    commands:
+      - echo Building the Java application...
+      - mvn clean install   # Adjust based on your build tool; use Gradle or Ant commands if needed
+  post_build:
+    commands:
+      - echo Build completed. Uploading artifacts to S3...
+      - aws s3 cp target/my-app.jar s3://artifacts-app/   # Replace with your S3 bucket name and artifact name
+
+artifacts:
+  files:
+    - target/my-app.jar      # Path to your Java app artifact
+  discard-paths: yes         # Optional: omit folder structure in S3 bucket
 
