@@ -1,20 +1,21 @@
 version: 0.2
+
 phases:
   install:
     runtime-versions:
       java: corretto11
-  pre_build:
     commands:
-    - echo In the pre_build phase...
+      - echo Installing Maven
+      - yum install -y maven
   build:
     commands:
-    - echo Build started on `date`
+      - echo Building the Java app
+      - mvn clean package
   post_build:
     commands:
-    - echo Build completed on `date`
-    - mvn package
-    - mv target/bike-service-0.0.1-SNAPSHOT.war bike-service-0.0.1-SNAPSHOT.war
+      - echo Build completed. Uploading artifacts to S3.
 artifacts:
   files:
-  - bike-service-0.0.1-SNAPSHOT.war
-  - .ebextensions/**/*
+    - target/*.jar
+  discard-paths: yes
+  base-directory: target
